@@ -1,0 +1,22 @@
+.clickable{
+    cursor:pointer;
+}
+.ticket{
+    margin:5px;
+    width:40px;
+    text-align: center;
+}
+.fr{
+    padding: 10px;
+}
+input.ng-valid{
+    border: 1px solid green;
+
+}
+input.ng-invalid .ng-touched{
+    border: 1px solid red;
+}
+.form{
+    margin:5px;
+    
+}

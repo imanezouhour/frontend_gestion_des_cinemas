@@ -1,0 +1,105 @@
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <ul *ngIf="villes" class="list-group">
+                <li [ngClass]="v==currentVille ? 'active' : ' '" *ngFor="let v of villes._embedded.villes" class="list-group-item clickable" (click)="onGetCinema(v)">
+                                       {{v.name}}
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-9">
+            <div class="panel panel-default">
+                <div class="panel-heading">Liste des cinémas</div>
+                <div class="panel-body">
+                    <ul *ngIf="cinemas" class="nav nav-pills">
+                        <li  [ngClass]="c==currentCinema ? 'active' : ' '"*ngFor="let c of cinemas._embedded.cinemas" class="clickable"  >
+                                               <a (click)="onGetSalles(c)">{{c.name}}</a> 
+                        </li>
+                        <li>
+                            <button class="btn btn-success" (click)="onClickOpenForm()">Ajouter</button>
+                        </li>
+                    </ul>
+                    <div [hidden]="!openform" class="form">
+                        <form [formGroup]="dataFormCinema" (ngSubmit)="onAddCinema(dataFormCinema.value)">
+                            <div class="form-group">
+                                <label class="control-label">Ville</label>
+                                <input type="text" formControlName="nomVille"  class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Cinema</label>
+                                <input type="text" formControlName="name"  class="form-control">
+                            </div>
+                            
+                            
+                            <button type="submit" class="btn btn-success">Ajouter</button>
+                        </form>
+                    </div>
+                    <div class="row" *ngIf="salles">
+                        <div *ngFor="let s of salles._embedded.salles | paginate: { id : 'listing_pagination',
+                        itemsPerPage:2,currentPage: page,totalItems:totalRecords}" >
+                            <div class="col-md-6">
+                                <div class="panel panel-default" >
+                                    <div class="panel-heading">{{s.name}}</div>
+                                    <div class="panel-body" *ngIf="s.projections">
+                                        <div class="row">
+                                            <div class="col-md-5">
+                                                <img width="150" src="{{frontService.host+'/imageFilm/'+s.projections._embedded.projections[0].film.id}}" alt="">
+                                            </div>
+                                            <div class="col-md-7">
+                                                <ul class="list-group">
+                                                    <li class="list-group-item" >séances:</li>
+                                                    <li  [ngClass]="p==currentProjection ? 'active' : ' '" (click)="onGetPlaces(p)" *ngFor="let p of s.projections._embedded.projections" class="list-group-item clickable">
+                                                        {{p.seance.heureDebut}}  => Prix: {{p.prix |number:'0.00'}} DH
+                                                    </li>
+                                                </ul>
+    
+                                            </div>
+                                        </div>
+                                        <div class="row" *ngIf="currentProjection">
+                                            <div *ngIf="currentProjection.tickets">
+                                                <div  *ngIf="currentProjection.salle.id==s.id">
+                                                    <button class="{{getBtnClass(t)}}" (click)="onSelectTicket(t)" [disabled]="t.reserve"  *ngFor="let t of currentProjection.tickets._embedded.tickets">
+                                                        {{t.place.numeroPlace}}
+                                                    </button>
+                                                    <div class="fr" *ngIf="listSelectedTicket.length>0">
+                                                        <form [formGroup]="dataForm" (ngSubmit)="onPayTickets(dataForm.value)">
+                                                            <div class="form-group">
+                                                                <label class="control-label">Nom du Client</label>
+                                                                <input type="text" formControlName="nomClient"  class="form-control">
+                                                            </div>
+                                                            <div class="alert alert-danger" *ngIf="nomClient.touched && nomClient.invalid">
+                                                                Veuillez saisir le nom du client
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label class="control-label">code du paiment</label>
+                                                                <input type="text" formControlName="codePayment"  class="form-control">
+                                                            </div>
+                                                            <div class="alert alert-danger" *ngIf="codePayment.touched && codePayment.invalid">
+                                                                Veuillez saisir le code de  payment
+                                                            </div>
+                                                            <button type="submit" class="btn btn-success">payer</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                                
+                                            </div>
+                                               
+
+                                        </div>
+                
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <pagination-controls   *ngIf="salles"  id="listing_pagination" maxSize="5" directionLinks="true" (pageChange)="page=$event" >
+                
+                        </pagination-controls>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+   
+</div>
